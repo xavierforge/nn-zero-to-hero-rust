@@ -1,0 +1,4 @@
+[workspace]
+members = ["common", "micrograd", "makemore", "gpt", "gpt2"]
+
+resolver = "3"
