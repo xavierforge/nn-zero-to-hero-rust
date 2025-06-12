@@ -37,6 +37,10 @@ impl Value {
     pub fn label(&self) -> Option<&str> {
         self.label.as_deref()
     }
+
+    pub fn set_label(&mut self, label: String) {
+        self.label = Some(label)
+    }
 }
 
 impl Add for Value {
