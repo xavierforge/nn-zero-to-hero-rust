@@ -22,3 +22,15 @@ fn test_value_addition() {
     assert_eq!(c.prev()[0].borrow().data(), 2.0);
     assert_eq!(c.prev()[1].borrow().data(), 3.0);
 }
+
+#[test]
+fn test_label_setting() {
+    let mut value = Value::new(1.0);
+    value.set_label(String::from("Cool"));
+
+    assert_eq!(
+        value.label(),
+        Some("Cool"),
+        "Expected value.label to be Cool"
+    )
+}
