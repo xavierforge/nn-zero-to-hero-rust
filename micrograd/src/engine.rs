@@ -85,3 +85,11 @@ impl<'a, 'b> Add<&'b Value> for &'a Value {
         Value::from_binary_op(self, rhs, "+", |a, b| a + b)
     }
 }
+
+impl<'a, 'b> Mul<&'b Value> for &'a Value {
+    type Output = Value;
+
+    fn mul(self, rhs: &'b Value) -> Self::Output {
+        Value::from_binary_op(self, rhs, "*", |a, b| a * b)
+    }
+}

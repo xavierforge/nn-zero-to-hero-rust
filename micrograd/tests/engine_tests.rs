@@ -34,3 +34,15 @@ fn test_label_setting() {
         "Expected value.label to be Cool"
     )
 }
+
+#[test]
+fn test_value_multiplication() {
+    let a = Value::new(2.0);
+    let b = Value::new(4.0);
+    let c = &a * &b;
+
+    assert_eq!(c.data(), 8.0);
+    assert_eq!(c.op(), Some("*"));
+    assert_eq!(c.prev()[0].data(), 2.0);
+    assert_eq!(c.prev()[1].data(), 4.0);
+}
