@@ -14,7 +14,7 @@ fn test_value_addition() {
     let a = Value::new(2.0);
     let b = Value::new(3.0);
 
-    let c = a + b;
+    let c = &a + &b;
 
     assert_eq!(c.data(), 5.0, "Expected c.data to be 5.0");
     assert_eq!(c.op(), Some("+"), "Expected c.op to be '+'");

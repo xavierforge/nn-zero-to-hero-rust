@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::ops::Add;
+use std::ops::{Add, Mul};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -29,6 +29,20 @@ impl Value {
             prev: Vec::new(),
             label: None,
         })))
+    }
+
+    pub fn from_binary_op<F>(lhs: &Value, rhs: &Value, op_str: &'static str, f: F) -> Value
+    where
+        F: Fn(f64, f64) -> f64,
+    {
+        let value_inner = ValueInner {
+            data: f(lhs.data(), rhs.data()),
+            prev: vec![lhs.clone(), rhs.clone()],
+            op: Some(op_str),
+            label: None,
+        };
+
+        Value(Rc::new(RefCell::new(value_inner)))
     }
 
     pub fn data(&self) -> f64 {
@@ -64,16 +78,10 @@ impl Value {
     }
 }
 
-impl Add for Value {
+impl<'a, 'b> Add<&'b Value> for &'a Value {
     type Output = Value;
 
-    fn add(self, rhs: Self) -> Self::Output {
-        let data = self.data() + rhs.data();
-
-        let out = Value::new(data);
-        out.inner_mut().op = Some("+");
-        out.inner_mut().prev = vec![self.clone(), rhs.clone()];
-
-        out
+    fn add(self, rhs: &'b Value) -> Self::Output {
+        Value::from_binary_op(self, rhs, "+", |a, b| a + b)
     }
 }
