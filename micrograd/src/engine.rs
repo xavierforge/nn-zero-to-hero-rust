@@ -3,9 +3,9 @@ use std::ops::{Add, Mul};
 use std::rc::Rc;
 
 #[derive(Debug)]
-pub struct Value(ValueRef);
+pub struct Value(Inner);
 
-type ValueRef = Rc<RefCell<ValueInner>>;
+type Inner = Rc<RefCell<ValueInner>>;
 
 #[derive(Debug)]
 struct ValueInner {
