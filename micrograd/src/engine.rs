@@ -31,7 +31,7 @@ impl Value {
         })))
     }
 
-    pub fn from_binary_op<F>(lhs: &Value, rhs: &Value, op_str: &'static str, f: F) -> Value
+    fn from_binary_op<F>(lhs: Value, rhs: Value, op_str: &'static str, f: F) -> Value
     where
         F: Fn(f64, f64) -> f64,
     {
@@ -57,10 +57,6 @@ impl Value {
         self.0.borrow().prev.clone()
     }
 
-    pub fn ptr(&self) -> *const () {
-        Rc::as_ptr(&self.0) as *const ()
-    }
-
     pub fn set_label(&self, label: String) {
         self.0.borrow_mut().label = Some(label)
     }
@@ -69,27 +65,31 @@ impl Value {
         self.0.borrow().label.clone()
     }
 
-    fn inner(&self) -> std::cell::Ref<'_, ValueInner> {
-        self.0.borrow()
+    pub fn ptr(&self) -> *const () {
+        Rc::as_ptr(&self.0) as *const ()
     }
 
-    fn inner_mut(&self) -> std::cell::RefMut<'_, ValueInner> {
-        self.0.borrow_mut()
-    }
+    // fn inner(&self) -> std::cell::Ref<'_, ValueInner> {
+    //     self.0.borrow()
+    // }
+
+    // fn inner_mut(&self) -> std::cell::RefMut<'_, ValueInner> {
+    //     self.0.borrow_mut()
+    // }
 }
 
-impl<'a, 'b> Add<&'b Value> for &'a Value {
+impl Add for Value {
     type Output = Value;
 
-    fn add(self, rhs: &'b Value) -> Self::Output {
+    fn add(self, rhs: Value) -> Self::Output {
         Value::from_binary_op(self, rhs, "+", |a, b| a + b)
     }
 }
 
-impl<'a, 'b> Mul<&'b Value> for &'a Value {
+impl Mul for Value {
     type Output = Value;
 
-    fn mul(self, rhs: &'b Value) -> Self::Output {
+    fn mul(self, rhs: Value) -> Self::Output {
         Value::from_binary_op(self, rhs, "*", |a, b| a * b)
     }
 }
