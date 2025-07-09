@@ -39,10 +39,29 @@ fn test_label_setting() {
 fn test_value_multiplication() {
     let a = Value::new(2.0);
     let b = Value::new(4.0);
-    let c = a.clone() * b.clone();
+    let c = a.clone() * b;
 
     assert_eq!(c.data(), 8.0);
     assert_eq!(c.op(), Some("*"));
     assert_eq!(c.prev()[0].data(), 2.0);
     assert_eq!(c.prev()[1].data(), 4.0);
+}
+
+#[test]
+fn test_value_tanh() {
+    let a = Value::new(1.0);
+    let b = a.tanh();
+
+    let expected = 1.0_f64.tanh();
+    let actual = b.data();
+
+    assert!(
+        (actual - expected).abs() < 1e-8,
+        "Expected tanh(1.0) to be {}, got {}",
+        expected,
+        actual
+    );
+    assert_eq!(b.op(), Some("tanh"), "Expected op to be 'tanh'");
+    assert_eq!(b.prev().len(), 1, "Expected one parent");
+    assert_eq!(b.prev()[0].data(), 1.0, "Expected parent value to be 1.0");
 }
