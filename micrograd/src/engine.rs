@@ -45,6 +45,20 @@ impl Value {
         Value(Rc::new(RefCell::new(value_inner)))
     }
 
+    fn from_unary_op<F>(value: Value, op_str: &'static str, f: F) -> Value
+    where
+        F: Fn(f64) -> f64,
+    {
+        let value_innter = ValueInner {
+            data: f(value.data()),
+            prev: vec![value.clone()],
+            op: Some(op_str),
+            label: None,
+        };
+
+        Value(Rc::new(RefCell::new(value_innter)))
+    }
+
     pub fn data(&self) -> f64 {
         self.0.borrow().data
     }
@@ -67,6 +81,10 @@ impl Value {
 
     pub fn ptr(&self) -> *const () {
         Rc::as_ptr(&self.0) as *const ()
+    }
+
+    pub fn tanh(&self) -> Self {
+        Self::from_unary_op(self.clone(), "tanh", |x| x.tanh())
     }
 
     // fn inner(&self) -> std::cell::Ref<'_, ValueInner> {
