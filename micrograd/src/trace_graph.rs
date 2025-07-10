@@ -56,7 +56,12 @@ pub fn draw_dot(root: &Value, output_path: &str) {
             Some(name) => name,
             None => String::new(),
         };
-        let label = format!("{{ {} | data {:.4} }}", name, val.data());
+        let label = format!(
+            "{{ {} | data {:.4} | grad {:.4} }}",
+            name,
+            val.data(),
+            val.grad()
+        );
         dot_string.push_str(&format!("n{} [label=\"{}\", shape=record];\n", id, label));
 
         if val.op().is_some() {
