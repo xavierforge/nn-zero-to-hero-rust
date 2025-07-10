@@ -71,7 +71,7 @@ fn test_backward_add() {
     let a = Value::new(2.0);
     let b = Value::new(3.0);
     let c = a.clone() + b.clone();
-    c.set_grad(1.0);
+
     c.backward();
     // ∂c/∂a = 1, ∂c/∂b = 1
     assert_eq!(a.grad(), 1.0);
@@ -83,7 +83,7 @@ fn test_backward_mul() {
     let a = Value::new(2.0);
     let b = Value::new(3.0);
     let c = a.clone() * b.clone();
-    c.set_grad(1.0);
+
     c.backward();
     // ∂c/∂a = b, ∂c/∂b = a
     assert_eq!(a.grad(), 3.0);
@@ -94,7 +94,7 @@ fn test_backward_mul() {
 fn test_backward_tanh() {
     let a = Value::new(0.5);
     let b = a.tanh();
-    b.set_grad(1.0);
+
     b.backward();
     // ∂tanh/∂a = 1 - tanh(a)^2
     let expected = 1.0 - b.data().powi(2);
@@ -110,7 +110,7 @@ fn test_backward_tanh() {
 fn test_gradient_accumulation() {
     let a = Value::new(2.0);
     let b = a.clone() + a.clone();
-    b.set_grad(1.0);
+
     b.backward();
     assert_eq!(
         a.grad(),

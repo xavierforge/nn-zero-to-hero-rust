@@ -27,15 +27,7 @@ fn main() {
     n.set_label("n".to_string());
     let o = n.tanh();
     o.set_label("o".to_string());
-    o.set_grad(1.0);
     o.backward();
-    n.backward();
-    x1w1x2w2.backward();
-    x1w1.backward();
-    x2w2.backward();
-    w1.backward();
-    w2.backward();
-    b.backward();
 
     draw_dot(&o, "./graph.svg");
 }

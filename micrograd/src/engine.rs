@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::ops::{Add, Mul};
 use std::rc::Rc;
 
@@ -134,8 +135,26 @@ impl Value {
     // ========================================================================
 
     pub fn backward(&self) {
-        if let Some(ref func) = self.0.borrow()._backward {
-            func()
+        let mut seen: HashMap<*const (), bool> = HashMap::new();
+        let mut topo: Vec<Value> = Vec::new();
+
+        fn build_topo(v: &Value, seen: &mut HashMap<*const (), bool>, topo: &mut Vec<Value>) {
+            let ptr = v.ptr();
+            if !seen.contains_key(&ptr) {
+                seen.insert(ptr, true);
+                for prev in v.prev() {
+                    build_topo(&prev, seen, topo);
+                }
+                topo.push(v.clone());
+            }
+        }
+        build_topo(self, &mut seen, &mut topo);
+        self.set_grad(1.0);
+        topo.reverse();
+        for v in topo {
+            if let Some(ref func) = v.0.borrow()._backward {
+                func()
+            }
         }
     }
 
