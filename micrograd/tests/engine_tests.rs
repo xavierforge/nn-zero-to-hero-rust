@@ -105,3 +105,16 @@ fn test_backward_tanh() {
         a.grad()
     );
 }
+
+#[test]
+fn test_gradient_accumulation() {
+    let a = Value::new(2.0);
+    let b = a.clone() + a.clone();
+    b.set_grad(1.0);
+    b.backward();
+    assert_eq!(
+        a.grad(),
+        2.0,
+        "Expected a.grad to be 2.0 after accumulation"
+    );
+}
