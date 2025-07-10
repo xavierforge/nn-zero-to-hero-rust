@@ -126,7 +126,7 @@ impl Value {
     }
 
     pub fn set_grad(&self, grad: f64) {
-        self.0.borrow_mut().grad = grad
+        self.0.borrow_mut().grad += grad
     }
 
     // ========================================================================
