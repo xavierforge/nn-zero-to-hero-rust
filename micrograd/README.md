@@ -141,22 +141,28 @@ fn main() {
     
     // Forward pass: linear combination + activation
     let x1w1 = x1.clone() * w1.clone();
+    x1w1.set_label("x1 * w1".to_string());
     let x2w2 = x2.clone() * w2.clone();
-    let linear = (x1w1 + x2w2) + b.clone();
-    let output = linear.tanh();
-    
+    x2w2.set_label("x2 * w2".to_string());
+    let x1w1x2w2 = x1w1.clone() + x2w2.clone();
+    x1w1x2w2.set_label("x1 * w1 + x2 * w2".to_string());
+    let n = x1w1x2w2.clone() + b.clone();
+    n.set_label("n".to_string());
+    let o = n.tanh();
+    o.set_label("o".to_string());
+
     // Backward pass
-    output.backward();
+    o.backward();
     
     // All gradients are now computed automatically!
-    println!("dL/dw1 = {}", w1.grad());
-    println!("dL/dw2 = {}", w2.grad());
-    println!("dL/db = {}", b.grad());
-    
     // Visualize the computational graph
     draw_dot(&output, "./graph.svg");
 }
 ```
+#### graph.svg
+<p align="center">
+  <img src="./graph.svg" alt="Computation Graph" width="1500" />
+</p>
 
 ### Supported Operations
 
