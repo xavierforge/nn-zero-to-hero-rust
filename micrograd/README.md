@@ -109,7 +109,6 @@ let e = c.clone() * d.clone();  // e = c * d = 30.0
 let output = e.tanh();          // output = tanh(30.0)
 
 // Backpropagation
-output.set_grad(1.0);  // Set gradient of output (∂L/∂output = 1)
 output.backward();     // Compute gradients for all operations in reverse order
 
 // Access computed gradients
@@ -147,7 +146,6 @@ fn main() {
     let output = linear.tanh();
     
     // Backward pass
-    output.set_grad(1.0);
     output.backward();
     
     // All gradients are now computed automatically!
