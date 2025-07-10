@@ -65,3 +65,43 @@ fn test_value_tanh() {
     assert_eq!(b.prev().len(), 1, "Expected one parent");
     assert_eq!(b.prev()[0].data(), 1.0, "Expected parent value to be 1.0");
 }
+
+#[test]
+fn test_backward_add() {
+    let a = Value::new(2.0);
+    let b = Value::new(3.0);
+    let c = a.clone() + b.clone();
+    c.set_grad(1.0);
+    c.backward();
+    // ∂c/∂a = 1, ∂c/∂b = 1
+    assert_eq!(a.grad(), 1.0);
+    assert_eq!(b.grad(), 1.0);
+}
+
+#[test]
+fn test_backward_mul() {
+    let a = Value::new(2.0);
+    let b = Value::new(3.0);
+    let c = a.clone() * b.clone();
+    c.set_grad(1.0);
+    c.backward();
+    // ∂c/∂a = b, ∂c/∂b = a
+    assert_eq!(a.grad(), 3.0);
+    assert_eq!(b.grad(), 2.0);
+}
+
+#[test]
+fn test_backward_tanh() {
+    let a = Value::new(0.5);
+    let b = a.tanh();
+    b.set_grad(1.0);
+    b.backward();
+    // ∂tanh/∂a = 1 - tanh(a)^2
+    let expected = 1.0 - b.data().powi(2);
+    assert!(
+        (a.grad() - expected).abs() < 1e-8,
+        "Expected grad {}, got {}",
+        expected,
+        a.grad()
+    );
+}

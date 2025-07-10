@@ -20,13 +20,22 @@ fn main() {
     x1w1.set_label("x1 * w1".to_string());
     let x2w2 = x2.clone() * w2.clone();
     x2w2.set_label("x2 * w2".to_string());
-    let x1w1x2w2 = x1w1 + x2w2;
+    let x1w1x2w2 = x1w1.clone() + x2w2.clone();
     x1w1x2w2.set_label("x1 * w1 + x2 * w2".to_string());
     // final output n = x1w1 + x2w2 + b
-    let n = x1w1x2w2 + b.clone();
+    let n = x1w1x2w2.clone() + b.clone();
     n.set_label("n".to_string());
     let o = n.tanh();
     o.set_label("o".to_string());
+    o.set_grad(1.0);
+    o.backward();
+    n.backward();
+    x1w1x2w2.backward();
+    x1w1.backward();
+    x2w2.backward();
+    w1.backward();
+    w2.backward();
+    b.backward();
 
     draw_dot(&o, "./graph.svg");
 }
