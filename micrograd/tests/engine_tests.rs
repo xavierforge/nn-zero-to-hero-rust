@@ -118,3 +118,38 @@ fn test_gradient_accumulation() {
         "Expected a.grad to be 2.0 after accumulation"
     );
 }
+
+#[test]
+fn test_value_power() {
+    let a = Value::new(2.0);
+    let b = a.clone().powi(3);
+
+    let expected = 2.0_f64.powi(3);
+    let actual = b.data();
+
+    assert!(
+        (actual - expected).abs() < 1e-8,
+        "Expected 2.0^3 to be {}, got {}",
+        expected,
+        actual
+    );
+    assert_eq!(b.op(), Some("powi"), "Expected op to be 'powi'");
+    assert_eq!(b.prev().len(), 1, "Expected one parent");
+    assert_eq!(b.prev()[0].data(), 2.0, "Expected parent value to be 2.0");
+}
+
+#[test]
+fn test_backward_power() {
+    let a = Value::new(2.0);
+    let b = a.clone().powi(3);
+
+    b.backward();
+    // ∂(a^3)/∂a = 3 * a^2
+    let expected = 3.0 * 2.0_f64.powi(2);
+    assert!(
+        (a.grad() - expected).abs() < 1e-8,
+        "Expected grad {}, got {}",
+        expected,
+        a.grad()
+    );
+}
