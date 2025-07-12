@@ -176,6 +176,20 @@ impl Value {
             },
         )
     }
+
+    pub fn powi(&self, i: i32) -> Self {
+        Value::unary_op_with_backward(
+            self.clone(),
+            "powi",
+            |x| x.powi(i),
+            |input, output| {
+                Box::new(move || {
+                    let grad = i as f64 * input.data().powi(i - 1);
+                    input.set_grad(grad * output.grad());
+                })
+            },
+        )
+    }
 }
 
 // ============================================================================
