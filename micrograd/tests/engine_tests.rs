@@ -153,3 +153,38 @@ fn test_backward_power() {
         a.grad()
     );
 }
+
+#[test]
+fn test_value_exponential() {
+    let a = Value::new(2.0);
+    let b = a.clone().exp();
+
+    let expected = 2.0_f64.exp();
+    let actual = b.data();
+
+    assert!(
+        (actual - expected).abs() < 1e-8,
+        "Expected exp(2.0) to be {}, got {}",
+        expected,
+        actual
+    );
+    assert_eq!(b.op(), Some("exp"), "Expected op to be 'exp'");
+    assert_eq!(b.prev().len(), 1, "Expected one parent");
+    assert_eq!(b.prev()[0].data(), 2.0, "Expected parent value to be 2.0");
+}
+
+#[test]
+fn test_backward_exponential() {
+    let a = Value::new(2.0);
+    let b = a.clone().exp();
+
+    b.backward();
+    // ∂(e^x)/∂x = e^x
+    let expected = b.data();
+    assert!(
+        (a.grad() - expected).abs() < 1e-8,
+        "Expected grad {}, got {}",
+        expected,
+        a.grad()
+    );
+}

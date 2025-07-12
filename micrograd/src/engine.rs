@@ -190,6 +190,19 @@ impl Value {
             },
         )
     }
+
+    pub fn exp(&self) -> Self {
+        Value::unary_op_with_backward(
+            self.clone(),
+            "exp",
+            |x| x.exp(),
+            |input, output| {
+                Box::new(move || {
+                    input.set_grad(output.data() * output.grad());
+                })
+            },
+        )
+    }
 }
 
 // ============================================================================
