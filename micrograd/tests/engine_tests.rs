@@ -250,3 +250,47 @@ fn test_backward_sub() {
     assert_eq!(a.grad(), 1.0);
     assert_eq!(b.grad(), -1.0);
 }
+
+#[test]
+fn test_tanh_equivalence() {
+    let a = Value::new(0.5);
+    let b = a.tanh();
+
+    // tanh(x) = (e^{2x} - 1) / (e^{2x} + 1)
+    let two_a = a.clone() * Value::new(2.0);
+    let exp_two_a = two_a.exp();
+    let numerator = exp_two_a.clone() - Value::new(1.0);
+    let denominator = exp_two_a + Value::new(1.0);
+    let manual_tanh = numerator * denominator.powi(-1);
+
+    assert!(
+        (b.data() - manual_tanh.data()).abs() < 1e-8,
+        "Expected tanh and manual calculation to be the same, got {} and {}",
+        b.data(),
+        manual_tanh.data()
+    );
+}
+
+#[test]
+fn test_tanh_backprop_equivalence() {
+    let a = Value::new(0.5);
+    let b = a.tanh();
+    b.backward();
+    let grad_tanh = a.grad();
+
+    let a2 = Value::new(0.5);
+    let two_a2 = a2.clone() * Value::new(2.0);
+    let exp_two_a2 = two_a2.exp();
+    let numerator2 = exp_two_a2.clone() - Value::new(1.0);
+    let denominator2 = exp_two_a2 + Value::new(1.0);
+    let manual_tanh2 = numerator2 * denominator2.powi(-1);
+    manual_tanh2.backward();
+    let grad_manual = a2.grad();
+
+    assert!(
+        (grad_tanh - grad_manual).abs() < 1e-8,
+        "Expected tanh and manual calculation to have same grad, got {} and {}",
+        grad_tanh,
+        grad_manual
+    );
+}
