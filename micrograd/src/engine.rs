@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Neg, Sub};
 use std::rc::Rc;
 
 // ============================================================================
@@ -241,6 +241,42 @@ impl Mul for Value {
                 Box::new(move || {
                     lhs.set_grad(rhs.data() * output.grad());
                     rhs.set_grad(lhs.data() * output.grad());
+                })
+            },
+        )
+    }
+}
+
+impl Neg for Value {
+    type Output = Value;
+
+    fn neg(self) -> Self::Output {
+        Value::unary_op_with_backward(
+            self,
+            "neg", // 更明確的 op_str
+            |x| -x,
+            |input, output| {
+                Box::new(move || {
+                    input.set_grad(-output.grad());
+                })
+            },
+        )
+    }
+}
+
+impl Sub for Value {
+    type Output = Value;
+
+    fn sub(self, rhs: Value) -> Self::Output {
+        Value::binary_op_with_backward(
+            self,
+            rhs,
+            "-",
+            |a, b| a - b,
+            |lhs, rhs, output| {
+                Box::new(move || {
+                    lhs.set_grad(1.0 * output.grad());
+                    rhs.set_grad(-1.0 * output.grad());
                 })
             },
         )
