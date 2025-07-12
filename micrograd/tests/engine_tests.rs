@@ -188,3 +188,65 @@ fn test_backward_exponential() {
         a.grad()
     );
 }
+
+#[test]
+fn test_value_negation() {
+    let a = Value::new(2.0);
+    let b = -a.clone();
+
+    assert_eq!(b.data(), -2.0);
+    assert_eq!(b.op(), Some("neg"), "Expected op to be 'neg'");
+    assert_eq!(b.prev().len(), 1);
+    assert_eq!(b.prev()[0].data(), 2.0);
+}
+
+#[test]
+fn test_backward_negation() {
+    let a = Value::new(2.0);
+    let b = -a.clone();
+
+    b.backward();
+    // ∂(-x)/∂x = -1
+    assert_eq!(a.grad(), -1.0);
+}
+
+#[test]
+fn test_value_sub() {
+    let a = Value::new(2.0);
+    let b = Value::new(1.0);
+    let c = a.clone() - b.clone();
+
+    let expected = 2.0 - 1.0;
+    let actual = c.data();
+
+    assert!(
+        (actual - expected).abs() < 1e-8,
+        "Expected 2.0 - 1.0 to be {}, got {}",
+        expected,
+        actual
+    );
+    assert_eq!(c.op(), Some("-"), "Expected op to be '-'");
+    assert_eq!(c.prev().len(), 2, "Expected two parents");
+    assert_eq!(
+        c.prev()[0].data(),
+        2.0,
+        "Expected first parent value to be 2.0"
+    );
+    assert_eq!(
+        c.prev()[1].data(),
+        1.0,
+        "Expected second parent value to be 1.0"
+    );
+}
+
+#[test]
+fn test_backward_sub() {
+    let a = Value::new(2.0);
+    let b = Value::new(1.0);
+    let c = a.clone() - b.clone();
+
+    c.backward();
+    // ∂(a - b)/∂a = 1, ∂(a - b)/∂b = -1
+    assert_eq!(a.grad(), 1.0);
+    assert_eq!(b.grad(), -1.0);
+}
