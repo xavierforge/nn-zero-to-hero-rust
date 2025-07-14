@@ -25,3 +25,18 @@ impl Neuron {
         act.tanh()
     }
 }
+
+pub struct Layer {
+    neurons: Vec<Neuron>,
+}
+
+impl Layer {
+    pub fn new(nin: u32, nout: u32) -> Self {
+        let neurons = (0..nout).map(|_| Neuron::new(nin)).collect();
+        Layer { neurons }
+    }
+
+    pub fn forward(&self, x: &[Value]) -> Vec<Value> {
+        self.neurons.iter().map(|n| n.forward(x)).collect()
+    }
+}
