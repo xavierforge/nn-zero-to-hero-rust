@@ -1,4 +1,5 @@
 use micrograd::engine::Value;
+use micrograd::nn::MLP;
 use micrograd::trace_graph::draw_dot;
 
 fn draw_value_example() {
@@ -33,6 +34,38 @@ fn draw_value_example() {
     draw_dot(&o, "./value_example.svg");
 }
 
+fn draw_mlp_example() {
+    let xs = vec![
+        vec![Value::new(2.0), Value::new(3.0), Value::new(-1.0)],
+        vec![Value::new(3.0), Value::new(-1.0), Value::new(0.5)],
+        vec![Value::new(0.5), Value::new(1.0), Value::new(1.0)],
+        vec![Value::new(1.0), Value::new(1.0), Value::new(-1.0)],
+    ];
+    let ys = vec![
+        Value::new(1.0),
+        Value::new(-1.0),
+        Value::new(-1.0),
+        Value::new(1.0),
+    ];
+
+    let mlp = MLP::new(3, vec![4, 4, 1]);
+    let y_pred = xs
+        .iter()
+        .map(|x| mlp.forward(x))
+        .flatten()
+        .collect::<Vec<_>>();
+    let loss = ys
+        .iter()
+        .zip(y_pred.iter())
+        .map(|(y, y_hat)| (y.clone() - y_hat.clone()).powi(2))
+        .reduce(|acc, x| acc + x) // does not implement Sum trait so we use reduce
+        .unwrap();
+
+    loss.backward();
+    draw_dot(&loss, "./mlp_example.svg");
+}
+
 fn main() {
     draw_value_example();
+    draw_mlp_example();
 }
