@@ -40,3 +40,23 @@ impl Layer {
         self.neurons.iter().map(|n| n.forward(x)).collect()
     }
 }
+
+pub struct MLP {
+    layers: Vec<Layer>,
+}
+
+impl MLP {
+    pub fn new(nin: u32, nouts: Vec<u32>) -> Self {
+        let sizes: Vec<u32> = std::iter::once(nin).chain(nouts.iter().copied()).collect();
+        let layers = sizes.windows(2).map(|w| Layer::new(w[0], w[1])).collect();
+        MLP { layers }
+    }
+
+    pub fn forward(&self, x: &[Value]) -> Vec<Value> {
+        let mut act = x.to_vec();
+        for layer in &self.layers {
+            act = layer.forward(&act);
+        }
+        act
+    }
+}
