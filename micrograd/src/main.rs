@@ -1,7 +1,7 @@
 use micrograd::engine::Value;
 use micrograd::trace_graph::draw_dot;
 
-fn main() {
+fn draw_value_example() {
     // inputs x1, x2
     let x1 = Value::new(2.0);
     x1.set_label("x1".to_string());
@@ -27,7 +27,12 @@ fn main() {
     n.set_label("n".to_string());
     let o = n.tanh();
     o.set_label("o".to_string());
+
     o.backward();
 
-    draw_dot(&o, "./graph.svg");
+    draw_dot(&o, "./value_example.svg");
+}
+
+fn main() {
+    draw_value_example();
 }
