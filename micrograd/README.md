@@ -161,7 +161,7 @@ fn main() {
 ```
 #### graph.svg
 <p align="center">
-  <img src="./graph.svg" alt="Computation Graph" width="1500" />
+  <img src="./value_example.svg" alt="Computation Graph" width="1500" />
 </p>
 
 ### Supported Operations
