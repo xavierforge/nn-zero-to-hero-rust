@@ -49,11 +49,7 @@ fn draw_mlp_example() {
     ];
 
     let mlp = MLP::new(3, vec![4, 4, 1]);
-    let y_pred = xs
-        .iter()
-        .map(|x| mlp.forward(x))
-        .flatten()
-        .collect::<Vec<_>>();
+    let y_pred = xs.iter().flat_map(|x| mlp.forward(x)).collect::<Vec<_>>();
     let loss = ys
         .iter()
         .zip(y_pred.iter())
