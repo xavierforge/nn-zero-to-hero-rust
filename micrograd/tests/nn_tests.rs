@@ -1,5 +1,5 @@
 use micrograd::engine::Value;
-use micrograd::nn::{Layer, Neuron};
+use micrograd::nn::{Layer, MLP, Neuron};
 
 #[test]
 fn test_neuron_forward() {
@@ -15,6 +15,17 @@ fn test_layer_forward() {
     let input = vec![Value::new(0.5), Value::new(-1.0), Value::new(2.0)];
     let output = layer.forward(&input);
     assert_eq!(output.len(), 2);
+    for val in output {
+        assert!(val.data() >= -1.0 && val.data() <= 1.0);
+    }
+}
+
+#[test]
+fn test_mlp_forward() {
+    let mlp = MLP::new(3, vec![4, 2, 1]);
+    let input = vec![Value::new(0.5), Value::new(-1.0), Value::new(2.0)];
+    let output = mlp.forward(&input);
+    assert_eq!(output.len(), 1);
     for val in output {
         assert!(val.data() >= -1.0 && val.data() <= 1.0);
     }
