@@ -24,6 +24,12 @@ impl Neuron {
         }
         act.tanh()
     }
+
+    pub fn parameters(&self) -> Vec<Value> {
+        let mut params = self.w.clone();
+        params.push(self.b.clone());
+        params
+    }
 }
 
 pub struct Layer {
@@ -38,6 +44,10 @@ impl Layer {
 
     pub fn forward(&self, x: &[Value]) -> Vec<Value> {
         self.neurons.iter().map(|n| n.forward(x)).collect()
+    }
+
+    pub fn parameters(&self) -> Vec<Value> {
+        self.neurons.iter().flat_map(|n| n.parameters()).collect()
     }
 }
 
@@ -58,5 +68,9 @@ impl MLP {
             act = layer.forward(&act);
         }
         act
+    }
+
+    pub fn parameters(&self) -> Vec<Value> {
+        self.layers.iter().flat_map(|l| l.parameters()).collect()
     }
 }
