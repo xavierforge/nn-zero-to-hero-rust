@@ -1,5 +1,5 @@
 use micrograd::engine::Value;
-use micrograd::nn::MLP;
+use micrograd::nn::{MLP, Module};
 use micrograd::trace_graph::draw_dot;
 
 fn draw_value_example() {
@@ -61,7 +61,71 @@ fn draw_mlp_example() {
     draw_dot(&loss, "./mlp_example.svg");
 }
 
+fn train_mlp() {
+    let xs = vec![
+        vec![Value::new(2.0), Value::new(3.0), Value::new(-1.0)],
+        vec![Value::new(3.0), Value::new(-1.0), Value::new(0.5)],
+        vec![Value::new(0.5), Value::new(1.0), Value::new(1.0)],
+        vec![Value::new(1.0), Value::new(1.0), Value::new(-1.0)],
+    ];
+    let ys = vec![
+        Value::new(1.0),
+        Value::new(-1.0),
+        Value::new(-1.0),
+        Value::new(1.0),
+    ];
+
+    let mlp = MLP::new(3, vec![4, 4, 1]);
+
+    let epochs = 20;
+    let lr = 0.01;
+
+    for i in 0..epochs {
+        // Forward pass
+        let y_pred = xs.iter().flat_map(|x| mlp.forward(x)).collect::<Vec<_>>();
+
+        // Compute loss
+        let loss = ys
+            .iter()
+            .zip(y_pred.iter())
+            .map(|(y, y_hat)| (y.clone() - y_hat.clone()).powi(2))
+            .reduce(|acc, x| acc + x) // does not implement Sum trait so we use reduce
+            .unwrap();
+
+        // Zero gradients
+        mlp.zero_grad();
+
+        // Backward pass
+        loss.backward();
+
+        // Update parameters
+        for param in mlp.parameters() {
+            let new_data = param.data() - lr * param.grad();
+            param.set_data(new_data);
+        }
+
+        println!("Epoch {}/{}: Loss = {:.3}", i + 1, epochs, loss.data());
+    }
+
+    println!("--------------------");
+    let y_pred = xs.iter().flat_map(|x| mlp.forward(x)).collect::<Vec<_>>();
+    println!(
+        "Training complete. Final loss: {}",
+        ys.iter()
+            .zip(y_pred.iter())
+            .map(|(y, y_hat)| (y.clone() - y_hat.clone()).powi(2))
+            .reduce(|acc, x| acc + x)
+            .unwrap()
+            .data()
+    );
+    println!("Final Predictions:");
+    for pred in y_pred {
+        println!("{}", pred.data());
+    }
+}
+
 fn main() {
-    draw_value_example();
-    draw_mlp_example();
+    // draw_value_example();
+    // draw_mlp_example();
+    train_mlp();
 }
