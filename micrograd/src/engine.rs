@@ -140,6 +140,10 @@ impl Value {
         self.0.borrow_mut().grad += grad
     }
 
+    pub fn set_data(&self, data: f64) {
+        self.0.borrow_mut().data = data;
+    }
+
     // ========================================================================
     // Backpropagation
     // ========================================================================
