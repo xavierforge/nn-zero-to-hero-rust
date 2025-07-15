@@ -1,5 +1,5 @@
 use micrograd::engine::Value;
-use micrograd::nn::{Layer, MLP, Neuron};
+use micrograd::nn::{Layer, MLP, Module, Neuron};
 
 #[test]
 fn test_neuron_forward() {
@@ -36,4 +36,13 @@ fn test_parameters() {
     let mlp = MLP::new(3, vec![4, 4, 1]);
     let params = mlp.parameters();
     assert_eq!(params.len(), 3 * 4 + 4 * 4 + 4 * 1 + 4 + 4 + 1); // weights + biases is 41
+}
+
+#[test]
+fn test_zero_grad() {
+    let mlp = MLP::new(3, vec![4, 4, 1]);
+    mlp.zero_grad();
+    for param in mlp.parameters() {
+        assert_eq!(param.grad(), 0.0);
+    }
 }

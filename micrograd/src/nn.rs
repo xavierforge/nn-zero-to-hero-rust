@@ -1,6 +1,15 @@
 use crate::engine::Value;
 use rand::Rng;
 
+pub trait Module {
+    fn zero_grad(&self) {
+        for param in self.parameters() {
+            param.set_grad(0.0);
+        }
+    }
+
+    fn parameters(&self) -> Vec<Value>;
+}
 pub struct Neuron {
     w: Vec<Value>,
     b: Value,
@@ -24,8 +33,10 @@ impl Neuron {
         }
         act.tanh()
     }
+}
 
-    pub fn parameters(&self) -> Vec<Value> {
+impl Module for Neuron {
+    fn parameters(&self) -> Vec<Value> {
         let mut params = self.w.clone();
         params.push(self.b.clone());
         params
@@ -45,8 +56,10 @@ impl Layer {
     pub fn forward(&self, x: &[Value]) -> Vec<Value> {
         self.neurons.iter().map(|n| n.forward(x)).collect()
     }
+}
 
-    pub fn parameters(&self) -> Vec<Value> {
+impl Module for Layer {
+    fn parameters(&self) -> Vec<Value> {
         self.neurons.iter().flat_map(|n| n.parameters()).collect()
     }
 }
@@ -69,8 +82,10 @@ impl MLP {
         }
         act
     }
+}
 
-    pub fn parameters(&self) -> Vec<Value> {
+impl Module for MLP {
+    fn parameters(&self) -> Vec<Value> {
         self.layers.iter().flat_map(|l| l.parameters()).collect()
     }
 }
