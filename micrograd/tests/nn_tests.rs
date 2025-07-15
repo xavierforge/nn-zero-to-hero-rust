@@ -30,3 +30,10 @@ fn test_mlp_forward() {
         assert!(val.data() >= -1.0 && val.data() <= 1.0);
     }
 }
+
+#[test]
+fn test_parameters() {
+    let mlp = MLP::new(3, vec![4, 4, 1]);
+    let params = mlp.parameters();
+    assert_eq!(params.len(), 3 * 4 + 4 * 4 + 4 * 1 + 4 + 4 + 1); // weights + biases is 41
+}
