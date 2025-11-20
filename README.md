@@ -48,15 +48,13 @@ Roadmap
 
 ✅ Setup workspace and project structure
 
-⬜ Implement basic micrograd with manual backward pass
+✅ Implement basic micrograd with manual backward pass
 
 ⬜ Implement makemore char-level model
 
 ⬜ Implement GPT with attention
 
 ⬜ Implement GPT-2 with optimizations
-
-⬜ Experiment with Burn and Candle interop
 
 ⬜ Benchmark performance
 
